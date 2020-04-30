@@ -33,20 +33,6 @@ enum VendingMachineError: Error {
     case productStuck
 }
 
-extension VendingMachineError: LocalizedError {
-    var errorDescription: String? {
-        switch self {
-        case .productNotFound:
-            return "Não temos esse produto"
-        case .productUnavailable:
-            return "Não temos esse produto no stock"
-        case .insufficientFunds:
-            return "O dinheiro é insuficiente"
-        case .productStuck:
-            return "Infelizmente tivemos um problema com a entrega do seu produto"
-        }
-    }
-}
 //TODO: Definir os erros
 
 class VendingMachine {
@@ -72,7 +58,7 @@ class VendingMachine {
         guard produto.amount > 0 else {
             throw VendingMachineError.productUnavailable
         }
-                
+        
         //TODO: ver se o dinheiro é o suficiente pro produto
         guard produto.price <= money else {
             throw VendingMachineError.insufficientFunds
@@ -96,15 +82,17 @@ class VendingMachine {
 
 let machine = VendingMachine(products: VendingMachineProducts.examples())
 
-if let mac = try? machine.getProduct(named: "Produto 1", with: 100) {
-    
-}
-
 do {
-    try machine.getProduct(named: "Produto 1", with: 100)
+    try machine.getProduct(named: "Produto 1", with: 1)
     try machine.getTroco()
     try machine.getProduct(named: "Produto 2", with: 100)
     try machine.getTroco()
-} catch {
-    print(error.localizedDescription)
+} catch VendingMachineError.insufficientFunds {
+    print("O dinheiro é insuficiente")
+} catch VendingMachineError.productNotFound {
+    print("Não temos esse produto")
+} catch VendingMachineError.productStuck {
+    print("Infelizmente tivemos um problema com a entrega do seu produto")
+} catch VendingMachineError.productUnavailable {
+    print("Não temos esse produto no estoque")
 }
